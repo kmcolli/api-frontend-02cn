@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: api-frontend-02cn
+  name: api-frontend-02cn
+  namespace:  zero-to-cloud-native
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: api-frontend-02cn
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        run: api-frontend-02cn
+    spec:
+      imagePullSecrets:
+        - name: all-icr-io
+      containers:
+      - env:
+        - name: LOGDNA_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: LOGDNA_APIKEY
+        - name: LOGDNA_LOGHOST
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: LOGDNA_LOGHOST
+        - name: RABBITMQ_HOST
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: RABBITMQ_HOST
+        - name: RABBITMQ_PORT
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: RABBITMQ_PORT
+        - name: RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: RABBITMQ_USER
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: RABBITMQ_PASSWORD
+        - name: RABBITMQ_QUEUE
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: RABBITMQ_QUEUE
+        - name: RABBITMQ_QUEUE
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: RABBITMQ_QUEUE
+        - name: RABBITMQ_CERT_CRN
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: RABBITMQ_CERT_CRN
+        - name: SERVERNAME
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: SERVERNAME
+        - name: IAM_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: IAM_ENDPOINT
+        - name: ENVIRONMENT
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: ENVIRONMENT
+        - name: IBMCLOUD_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: IBMCLOUD_APIKEY
+        - name: CERT_MANAGER_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name:  zero-to-cloud-native-secrets
+              key: CERT_MANAGER_ENDPOINT
+        image: us.icr.io/zero-to-cloud-native/api-frontend-02cn:v37
+        name:  zero-to-cloud-native-api
+        resources:
+          requests:
+            cpu: 300m
+            memory: "64Mi"
+          limits:
+            cpu: 500m
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run:  api-frontend-02cn
+  name:  api-frontend-02cn-service
+  namespace:  zero-to-cloud-native
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    run:  api-frontend-02cn
+  type: LoadBalancer
+        

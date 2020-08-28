@@ -1,0 +1,37 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../ocp-realtime-02cn"
+		},
+		{
+			"path": "../secrets-02cn"
+		},
+		{
+			"path": "../enable-node-ssh-02cn"
+		},
+		{
+			"path": "../web-frontend-02cn"
+		},
+		{
+			"path": "../../../Box Sync/DevelopingOnIBMCloud/private-secrets"
+		},
+		{
+			"path": "../load-ocp-versions-02cn"
+		},
+		{
+			"path": "../cloudpak-provisioner-cp4d"
+		},
+		{
+			"path": "../roksRequestSecrets"
+		},
+		{
+			"path": "../cloudpak-provisioner-px"
+		},
+		{
+			"path": "../utility-02cn"
+		}
+	]
+}
