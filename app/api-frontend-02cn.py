@@ -108,38 +108,24 @@ def getRabbitCert(reqid, apikey):
 
 def realtimemessage(queue, message):
     app.logger.debug("Starting real time message")
-    RABBITMQ_HOST = 'c0c928d1-a952-4a23-a432-9290e80a11ef.4b2136ddd30a46e9b7bdb2b2db7f8cd0.private.databases.appdomain.cloud'
-    RABBITMQ_PORT = '31856'
-    RABBITMQ_USER = 'admin'
-    RABBITMQ_PASSWORD = 'i23mhQ7A6FgUrF76'
-    RABBITMQ_QUEUE = 'OCP-Realtime-02cn'
-    RABBITMQ_CACERT = 'icd.pem'   
     try:
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-        # context = ssl._create_unverified_context()
+
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         context.verify_mode = ssl.CERT_REQUIRED
         cert = getRabbitCert2("REALTIME", app.config["IBMCLOUD_APIKEY"])
         app.logger.info("Cert = {}".format(cert))
-        #context.load_verify_locations('rabbit-crt.pem')
-        #context.load_verify_locations('/87ca6778-6d9d-11e9-b6bc-be2dba81101c.pem')
-        context.load_verify_locations('icd.pem')
-        
         # context.load_verify_locations(cadata=cert)
-        app.logger.info("RABBIT PORT = {}".format(app.config['RABBITMQ_PORT']))
-        app.logger.info("RABBIT HOST = {}".format(app.config['RABBITMQ_HOST']))
-        app.logger.info("RABBIT USER = {}".format(app.config['RABBITMQ_USER']))
-        app.logger.info("RABBIT PASS = {}".format(app.config['RABBITMQ_PASSWORD']))
+        context.load_verify_locations('icd.pem')
         #conn_params = pika.ConnectionParameters(port=app.config['RABBITMQ_PORT'],
         #                                    host=app.config['RABBITMQ_HOST'],
         #                                    credentials=pika.PlainCredentials(app.config['RABBITMQ_USER'],
         #                                                                      app.config['RABBITMQ_PASSWORD']),
         #                                    ssl_options=pika.SSLOptions(context))
-        conn_params = pika.ConnectionParameters(port=RABBITMQ_PORT,
-                                            host=RABBITMQ_HOST,
-                                            credentials=pika.PlainCredentials(RABBITMQ_USER,
-                                                                              RABBITMQ_PASSWORD),
+        conn_params = pika.ConnectionParameters(port='31856',
+                                            host='c0c928d1-a952-4a23-a432-9290e80a11ef.4b2136ddd30a46e9b7bdb2b2db7f8cd0.databases.appdomain.cloud',
+                                            credentials=pika.PlainCredentials('ibm_cloud_0899a62c_9c0f_4c4d_b942_1d5512c8cff2',
+                                                                              'a05d2e62ee00d2758125fe313103e1eb4e58a4d4cadd48deaca282694277d788'),
                                             ssl_options=pika.SSLOptions(context))
-
         connection = pika.BlockingConnection(conn_params)
         message_queue = queue
         message_channel = connection.channel()
