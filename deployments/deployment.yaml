@@ -94,7 +94,7 @@ spec:
             secretKeyRef:
               name:  zero-to-cloud-native-secrets
               key: CERT_MANAGER_ENDPOINT
-        image: us.icr.io/zero-to-cloud-native/api-frontend-02cn:v46
+        image: us.icr.io/zero-to-cloud-native/api-frontend-02cn:v52
         name:  zero-to-cloud-native-api
         resources:
           requests:

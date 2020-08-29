@@ -5,9 +5,6 @@ RUN apt-get update && apt-get install -y apt-transport-https python3.8 python3-p
 COPY . .
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
-RUN pip3 install ndg-httpsclient
-RUN pip3 install pyopenssl
-RUN pip3 install pyasn1
 ENV FLASK_APP=api-frontend-02cn.py
 EXPOSE 8000
 ENTRYPOINT [ "python3" ]
