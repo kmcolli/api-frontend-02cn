@@ -22,15 +22,6 @@
 			"path": "../load-ocp-versions-02cn"
 		},
 		{
-			"path": "../cloudpak-provisioner-cp4d"
-		},
-		{
-			"path": "../roksRequestSecrets"
-		},
-		{
-			"path": "../cloudpak-provisioner-px"
-		},
-		{
 			"path": "../utility-02cn"
 		}
 	]

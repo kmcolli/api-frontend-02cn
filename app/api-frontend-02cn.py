@@ -114,18 +114,18 @@ def realtimemessage(queue, message):
         context.verify_mode = ssl.CERT_REQUIRED
         cert = getRabbitCert2("REALTIME", app.config["IBMCLOUD_APIKEY"])
         app.logger.info("Cert = {}".format(cert))
-        # context.load_verify_locations(cadata=cert)
-        context.load_verify_locations('cert.pem')
-        #conn_params = pika.ConnectionParameters(port=app.config['RABBITMQ_PORT'],
-        #                                    host=app.config['RABBITMQ_HOST'],
-        #                                    credentials=pika.PlainCredentials(app.config['RABBITMQ_USER'],
-        #                                                                      app.config['RABBITMQ_PASSWORD']),
-        #                                    ssl_options=pika.SSLOptions(context))
-        conn_params = pika.ConnectionParameters(port='30829',
-                                            host='c0c928d1-a952-4a23-a432-9290e80a11ef.4b2136ddd30a46e9b7bdb2b2db7f8cd0.databases.appdomain.cloud',
-                                            credentials=pika.PlainCredentials('admin',
-                                                                              'i23mhQ7A6FgUrF76'),
+        context.load_verify_locations(cadata=cert)
+        # context.load_verify_locations('cert.pem')
+        conn_params = pika.ConnectionParameters(port=app.config['RABBITMQ_PORT'],
+                                            host=app.config['RABBITMQ_HOST'],
+                                            credentials=pika.PlainCredentials(app.config['RABBITMQ_USER'],
+                                                                              app.config['RABBITMQ_PASSWORD']),
                                             ssl_options=pika.SSLOptions(context))
+        #conn_params = pika.ConnectionParameters(port='30829',
+        #                                    host='c0c928d1-a952-4a23-a432-9290e80a11ef.4b2136ddd30a46e9b7bdb2b2db7f8cd0.databases.appdomain.cloud',
+        #                                    credentials=pika.PlainCredentials('admin',
+        #                                                                      'i23mhQ7A6FgUrF76'),
+        #                                    ssl_options=pika.SSLOptions(context))
         connection = pika.BlockingConnection(conn_params)
         message_queue = queue
         message_channel = connection.channel()
@@ -151,6 +151,7 @@ class EnableSSH(Resource):
             clustername = input_json_data['cluster_name']
 
             message = { "reqid": reqid,
+                        "action": "enableSSH",
                         "APIKEY": apikey,
                         "CLUSTER_NAME": clustername
                         }
