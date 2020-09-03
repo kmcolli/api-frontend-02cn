@@ -60,51 +60,20 @@ def getiamtoken():
     return iamtoken    
 
 
-def getRabbitCert2(reqid, apikey):
-    app.logger.debug("{} Starting to get RabbitMQ Certificate ")
-    iamToken = getiamtoken()
-    app.logger.info("{} iamToken = {}".format(reqid, iamToken))
-    certManagerEndpoint = app.config['CERT_MANAGER_ENDPOINT']
-    app.logger.info("{} Cert Manager Endpoint = {}".format(reqid, certManagerEndpoint))
-    header = {
-        'accept': 'application/json',
-        'Authorization': 'Bearer ' + iamToken["access_token"]
-    }
-    rabbit_crn = app.config['RABBITMQ_CERT_CRN']
-    app.logger.info("{} RABBIT CRN = {}".format(reqid, rabbit_crn))
-    
-    url = certManagerEndpoint+'/api/v2/certificate/'+urllib.parse.quote_plus(rabbit_crn)
-    app.logger.info("{} url = {}".format(reqid, url))
-    response = requests.get(url,headers=header)
-    json_response = json.loads(response.text)
-    #cert_file = open("rabbit-crt.pem", "w")
-    #cert_file.write(json_response['data']['content'])
-    #cert_file.close()
-    
-    return json_response['data']['content']
-
 def getRabbitCert(reqid, apikey):
     app.logger.debug("{} Starting to get RabbitMQ Certificate ")
     iamToken = getiamtoken()
-    app.logger.info("{} iamToken = {}".format(reqid, iamToken))
     certManagerEndpoint = app.config['CERT_MANAGER_ENDPOINT']
-    app.logger.info("{} Cert Manager Endpoint = {}".format(reqid, certManagerEndpoint))
     header = {
         'accept': 'application/json',
         'Authorization': 'Bearer ' + iamToken["access_token"]
     }
     rabbit_crn = app.config['RABBITMQ_CERT_CRN']
-    app.logger.info("{} RABBIT CRN = {}".format(reqid, rabbit_crn))
-    
     url = certManagerEndpoint+'/api/v2/certificate/'+urllib.parse.quote_plus(rabbit_crn)
-    app.logger.info("{} url = {}".format(reqid, url))
     response = requests.get(url,headers=header)
     json_response = json.loads(response.text)
-    cert_file = open("rabbit-crt.pem", "w")
-    cert_file.write(json_response['data']['content'])
-    cert_file.close()
     
-    return
+    return json_response['data']['content']
 
 def realtimemessage(queue, message):
     app.logger.debug("Starting real time message")
@@ -112,20 +81,14 @@ def realtimemessage(queue, message):
 
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         context.verify_mode = ssl.CERT_REQUIRED
-        cert = getRabbitCert2("REALTIME", app.config["IBMCLOUD_APIKEY"])
+        cert = getRabbitCert("REALTIME", app.config["IBMCLOUD_APIKEY"])
         app.logger.info("Cert = {}".format(cert))
         context.load_verify_locations(cadata=cert)
-        # context.load_verify_locations('cert.pem')
         conn_params = pika.ConnectionParameters(port=app.config['RABBITMQ_PORT'],
                                             host=app.config['RABBITMQ_HOST'],
                                             credentials=pika.PlainCredentials(app.config['RABBITMQ_USER'],
                                                                               app.config['RABBITMQ_PASSWORD']),
                                             ssl_options=pika.SSLOptions(context))
-        #conn_params = pika.ConnectionParameters(port='30829',
-        #                                    host='c0c928d1-a952-4a23-a432-9290e80a11ef.4b2136ddd30a46e9b7bdb2b2db7f8cd0.databases.appdomain.cloud',
-        #                                    credentials=pika.PlainCredentials('admin',
-        #                                                                      'i23mhQ7A6FgUrF76'),
-        #                                    ssl_options=pika.SSLOptions(context))
         connection = pika.BlockingConnection(conn_params)
         message_queue = queue
         message_channel = connection.channel()
@@ -134,10 +97,8 @@ def realtimemessage(queue, message):
         try:
             message_channel.basic_publish(exchange='', routing_key=message_queue, body=json.dumps(message),  properties=pika.BasicProperties(delivery_mode=2))
         except pika.exceptions.UnroutableError:
-            app.logger.error("Error sending message")
             connection.close()
     except Exception as e:
-        app.logger.info("Problem sending real time message {}".format(e))    
         connection.close()
     connection.close()
 
@@ -155,17 +116,17 @@ class EnableSSH(Resource):
                         "APIKEY": apikey,
                         "CLUSTER_NAME": clustername
                         }
-            app.logger.info("Sending real time message to enable SSH.")
+            app.logger.debug("{} Sending real time message to enable SSH.".format(reqid))
             json_message = json.dumps(message)
             realtimemessage(app.config["RABBITMQ_QUEUE"], json_message ) 
-            app.logger.info("Successfully requested enable SSH")    
+            app.logger.info("{} Successfully requested enable SSH".format(reqid))    
             return {
-                "Status":"Successfully requested enable SSH"
+                "Status":"Successfully requested enable SSH. Request id = "+reqid
             }
         except:
-            app.logger.error("Problem requesting enable SSH")
+            app.logger.error("{} Problem requesting enable SSH".format(reqid))
             return {
-                "Status":"Problem requesting enable SSH"
+                "Status":"Problem requesting enable SSH. Request ID = "+reqid
             }
 
 class GetOCPToken(Resource):
@@ -176,19 +137,17 @@ class GetOCPToken(Resource):
             app.logger.info("{} Zero to Cloud Native API Starting Get OCP Token.".format(reqid))
             apikey = input_json_data['apikey']
             clustername = input_json_data['cluster_name']
-
+            
             headers = { "Content-Type": "application/json" }
             port = os.environ.get("OCP_REALTIME_02CN_SERVICE_SERVICE_PORT")
             url = "http://"+os.environ.get("OCP_REALTIME_02CN_SERVICE_SERVICE_HOST")
             openshift_realtime_url = url+":"+port+"/api/v1/getOCPToken/"
-            app.logger.debug("{} ocp token url = {}".format(reqid, openshift_realtime_url))
             data={ "reqid": reqid,
                    "apikey": apikey,
                    "clustername": clustername}
             response = requests.get(openshift_realtime_url,headers=headers,data=json.dumps(data))
             token = response.json()["token"]
             server = response.json()["server"]
-            app.logger.info("{} Successfully got this ocp token {}".format(reqid, token))    
             return { "Status": "Successfully got ocp token",
                      "token": token,
                      "login": "oc login --token="+token+" --server="+server
@@ -209,11 +168,10 @@ class GetOCPVersions(Resource):
             port = os.environ.get("OCP_REALTIME_02CN_SERVICE_SERVICE_PORT")
             url = "http://"+os.environ.get("OCP_REALTIME_02CN_SERVICE_SERVICE_HOST")
             openshift_realtime_url = url+":"+port+"/api/v1/getOCPVersions/"
-            app.logger.debug("{} ocp version url = {}".format(reqid, openshift_realtime_url))
             data={ "reqid": reqid}
             response = requests.get(openshift_realtime_url,headers=headers,data=json.dumps(data))
             versions=response.json()
-            app.logger.info("{} Successfully got these ocp versions {}".format(reqid, versions))    
+            app.logger.debug("{} Successfully got these ocp versions {}".format(reqid, versions))    
             return versions
         except Exception as e:
             app.logger.error("{} Error Zero to Cloud Native API getting OCP versions  {}".format(reqid, e))
