@@ -82,7 +82,6 @@ def realtimemessage(queue, message):
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         context.verify_mode = ssl.CERT_REQUIRED
         cert = getRabbitCert("REALTIME", app.config["IBMCLOUD_APIKEY"])
-        app.logger.info("Cert = {}".format(cert))
         context.load_verify_locations(cadata=cert)
         conn_params = pika.ConnectionParameters(port=app.config['RABBITMQ_PORT'],
                                             host=app.config['RABBITMQ_HOST'],
