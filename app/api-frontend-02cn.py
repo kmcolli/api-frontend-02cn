@@ -6,7 +6,7 @@ from logging.config import dictConfig
 from logdna import LogDNAHandler
 from subprocess import call, check_output, Popen, PIPE
 from random import seed, gauss
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 dictConfig({
             'version': 1,
@@ -39,12 +39,10 @@ HOST = '0.0.0.0'
 PORT = 8000
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
-app.config['CORS_HEADERS'] = 'Content-Type'
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.logger.debug("Starting zero to cloud native api frontend")
 
 app.config.from_object(Config)
-
 
 api = Api(app)
 
