@@ -6,6 +6,7 @@ from logging.config import dictConfig
 from logdna import LogDNAHandler
 from subprocess import call, check_output, Popen, PIPE
 from random import seed, gauss
+from flask_cors import CORS, cross_origin
 
 dictConfig({
             'version': 1,
@@ -38,6 +39,8 @@ HOST = '0.0.0.0'
 PORT = 8000
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.logger.debug("Starting zero to cloud native api frontend")
 
 app.config.from_object(Config)
@@ -158,7 +161,7 @@ class GetOCPToken(Resource):
             }
 
 class GetOCPVersions(Resource):
-    def post(self):
+    def get(self):
         try:
             reqid=getRequestId()
             app.logger.info("{} Zero to Cloud Native API Starting Get OCP Versions.".format(reqid))
