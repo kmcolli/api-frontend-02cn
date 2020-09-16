@@ -4,6 +4,8 @@ ENV LANG=C.UTF-8
 RUN apt-get update && apt-get install -y apt-transport-https python3.8 python3-pip socat
 COPY . .
 COPY requirements.txt .
+COPY certs/server.crt /app/server.crt
+COPY certs/server.key /app/server.key
 RUN pip3 install -r requirements.txt
 ENV FLASK_APP=api-frontend-02cn.py
 EXPOSE 8000

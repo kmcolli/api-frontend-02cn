@@ -6,6 +6,7 @@ from logging.config import dictConfig
 from logdna import LogDNAHandler
 from subprocess import call, check_output, Popen, PIPE
 from random import seed, gauss
+from werkzeug import serving
 
 dictConfig({
             'version': 1,
@@ -185,5 +186,8 @@ api.add_resource(GetOCPToken, '/api/v1/getOCPToken/')
 api.add_resource(GetOCPVersions, '/api/v1/getOCPVersions/')
 getRabbitCert('START-API-FRONTEND ', app.config['IBMCLOUD_APIKEY'])
 
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+context.load_cert_chain("/app/server.crt", "/app/server.key")
 if __name__ == '__main__':
-    app.run(host=HOST, port=PORT, threaded=True, debug=True)
+    app.run(host=HOST, port=PORT, threaded=True, debug=True, ssl_context=context)
+    #app.run(host=HOST, port=PORT, threaded=True, debug=True)
