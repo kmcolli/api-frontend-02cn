@@ -159,7 +159,7 @@ class GetOCPToken(Resource):
             }
 
 class GetOCPVersions(Resource):
-    def post(self):
+    def get(self):
         try:
             reqid=getRequestId()
             app.logger.info("{} Zero to Cloud Native API Starting Get OCP Versions.".format(reqid))
