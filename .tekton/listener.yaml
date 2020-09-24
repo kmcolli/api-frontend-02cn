@@ -10,6 +10,8 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
+    - name: deploymentFile
+      description: location and name of deployment file
     - name: registryNamespace
       description: the ibmcloud registry namespace
     - name: registryRegion
@@ -63,6 +65,8 @@ spec:
           value: $(params.clusterRegion)
         - name: clusterNamespace
           value: $(params.clusterNamespace)
+        - name: deploymentFile
+          value: $(params.deploymentFile)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -70,10 +74,8 @@ metadata:
   name: binding
 spec:
   params:
-    - name: repository
-      value: "https://github.com/kmcolli/web-frontend-02cn"
     - name: revision
-      value: "master"
+      value: $(params.revision)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
