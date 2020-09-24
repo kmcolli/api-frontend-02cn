@@ -45,7 +45,6 @@ app.logger.debug("Starting zero to cloud native api frontend")
 
 app.config.from_object(Config)
 
-
 api = Api(app)
 
 def getRequestId():
