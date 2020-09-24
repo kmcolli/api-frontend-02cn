@@ -25,6 +25,8 @@ spec:
     - name: clusterNamespace
       description: The Kubernetes cluster namespace
       default: prod
+    - name: imageName
+      description: Name of the image
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -67,6 +69,8 @@ spec:
           value: $(params.clusterNamespace)
         - name: deploymentFile
           value: $(params.deploymentFile)
+        - name: imageName
+          value: $(params.imageName)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding

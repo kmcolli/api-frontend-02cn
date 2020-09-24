@@ -27,7 +27,6 @@ spec:
       default: prod
     - name: imageName
       description: The name of the image with the container registy namespace
-      default: us.icr.io/namespace/image
   workspaces:
   - name: pipeline-pvc
   tasks:
