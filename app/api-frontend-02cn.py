@@ -176,9 +176,11 @@ class GetOCPVersions(Resource):
             data={ "reqid": reqid}
             response = requests.get(openshift_realtime_url,headers=headers,data=json.dumps(data))
             versions=response.json()
-            versions.append({"View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid})
             app.logger.debug("{} Successfully got these ocp versions {}".format(reqid, versions)) 
-            return versions
+            return { 
+                "versions": versions,
+                "View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid
+            }
         except Exception as e:
             app.logger.error("{} Error Zero to Cloud Native API getting OCP versions  {}".format(reqid, e))
             return {
