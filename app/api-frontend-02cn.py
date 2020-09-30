@@ -112,7 +112,7 @@ class EnableSSH(Resource):
             apikey = input_json_data['apikey']
             clustername = input_json_data['cluster_name']
 
-           message = { "reqid": reqid,
+            message = { "reqid": reqid,
                         "action": "enableSSH",
                         "APIKEY": apikey,
                         "CLUSTER_NAME": clustername
