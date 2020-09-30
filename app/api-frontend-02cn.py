@@ -151,6 +151,7 @@ class GetOCPToken(Resource):
             response = requests.get(openshift_realtime_url,headers=headers,data=json.dumps(data))
             token = response.json()["token"]
             server = response.json()["server"]
+            app.logger.info("{} Successfully got ocp token.".format(reqid))
             return { "Status": "Successfully got ocp token",
                      "token": token,
                      "login": "oc login --token="+token+" --server="+server,
@@ -176,7 +177,7 @@ class GetOCPVersions(Resource):
             data={ "reqid": reqid}
             response = requests.get(openshift_realtime_url,headers=headers,data=json.dumps(data))
             versions=response.json()
-            app.logger.debug("{} Successfully got these ocp versions {}".format(reqid, versions)) 
+            app.logger.info("{} Successfully got these ocp versions {}".format(reqid, versions)) 
             return { 
                 "versions": versions,
                 "View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid
