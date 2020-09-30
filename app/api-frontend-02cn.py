@@ -112,7 +112,7 @@ class EnableSSH(Resource):
             apikey = input_json_data['apikey']
             clustername = input_json_data['cluster_name']
 
-            message = { "reqid": reqid,
+           message = { "reqid": reqid,
                         "action": "enableSSH",
                         "APIKEY": apikey,
                         "CLUSTER_NAME": clustername
@@ -122,12 +122,14 @@ class EnableSSH(Resource):
             realtimemessage(app.config["RABBITMQ_QUEUE"], json_message ) 
             app.logger.info("{} Successfully requested enable SSH".format(reqid))    
             return {
-                "Status":"Successfully requested enable SSH. Request id = "+reqid
+                "Status":"Successfully requested enable SSH. Request id = "+reqid,
+                "View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid
             }
         except:
             app.logger.error("{} Problem requesting enable SSH".format(reqid))
             return {
-                "Status":"Problem requesting enable SSH. Request ID = "+reqid
+                "Status":"Problem requesting enable SSH. Request ID = "+reqid,
+                "View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid
             }
 
 class GetOCPToken(Resource):
@@ -151,12 +153,14 @@ class GetOCPToken(Resource):
             server = response.json()["server"]
             return { "Status": "Successfully got ocp token",
                      "token": token,
-                     "login": "oc login --token="+token+" --server="+server
+                     "login": "oc login --token="+token+" --server="+server,
+                     "View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid
                     }
         except Exception as e:
             app.logger.error("{} Zero to Cloud Native API Starting Get OCP token  {}".format(reqid, e))
             return {
-                "Status":"Problem getting ocp token for request id "+reqid
+                "Status":"Problem getting ocp token for request id "+reqid,
+                "View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid
             }
 
 class GetOCPVersions(Resource):
@@ -172,14 +176,15 @@ class GetOCPVersions(Resource):
             data={ "reqid": reqid}
             response = requests.get(openshift_realtime_url,headers=headers,data=json.dumps(data))
             versions=response.json()
-            app.logger.debug("{} Successfully got these ocp versions {}".format(reqid, versions))    
+            versions.append("View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid)
+            app.logger.debug("{} Successfully got these ocp versions {}".format(reqid, versions)) 
             return versions
         except Exception as e:
             app.logger.error("{} Error Zero to Cloud Native API getting OCP versions  {}".format(reqid, e))
             return {
-                "Status":"Problem getting roks versions for request id "+reqid
+                "Status":"Problem getting roks versions for request id "+reqid,
+                "View Logs": "https://status.zero-to-cloud-native.com/?reqid="+reqid
             }
-
 
 
 api.add_resource(EnableSSH, '/api/v1/enableSSH/')
