@@ -174,7 +174,7 @@ class GetOCPVersions(Resource):
             response = requests.get(openshift_realtime_url,headers=headers,data=json.dumps(data))
             versions=response.json()
             app.logger.info("{} Successfully got these ocp versions {}".format(reqid, versions))    
-            return versions
+            return {"versions": versions }
         except Exception as e:
             app.logger.error("{} Error Zero to Cloud Native API getting OCP versions  {}".format(reqid, e))
             return {
