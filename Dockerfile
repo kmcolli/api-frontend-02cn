@@ -10,4 +10,5 @@ RUN pip3 install -r requirements.txt
 ENV FLASK_APP=api-frontend-02cn.py
 EXPOSE 8000
 ENTRYPOINT [ "python3" ]
+
 CMD [ "app/api-frontend-02cn.py" ]
