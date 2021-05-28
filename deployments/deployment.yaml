@@ -98,11 +98,11 @@ spec:
         name:  zero-to-cloud-native-api
         resources:
           requests:
-            cpu: 300m
-            memory: "64Mi"
+            cpu: 100m
+            memory: "32Mi"
           limits:
-            cpu: 500m
-            memory: "512Mi"
+            cpu: 300m
+            memory: "128Mi"
 ---
 apiVersion: v1
 kind: Service
